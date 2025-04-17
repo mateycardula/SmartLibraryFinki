@@ -23,7 +23,7 @@ public class TestController {
     @GetMapping
     @RequestMapping("/python")
     public String getPythonTestMessage() {
-        String url = "http://localhost:5000";
+        String url = "http://flask:5000";
         return restTemplate.getForObject(url, String.class);
     }
 }
