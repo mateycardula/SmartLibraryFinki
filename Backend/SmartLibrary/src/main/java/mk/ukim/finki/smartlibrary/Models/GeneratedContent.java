@@ -54,4 +54,11 @@ public class GeneratedContent {
     public UploadDocument getDocument() { return document; }
     public void setDocument(UploadDocument document) { this.document = document; }
 
+    public ExportDocument getExportedDocument() {
+        return exportedDocument;
+    }
+
+    public void setExportedDocument(ExportDocument exportedDocument) {
+        this.exportedDocument = exportedDocument;
+    }
 }
