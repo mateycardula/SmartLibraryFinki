@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import { useParams } from "react-router-dom";
-import { mockDocuments } from "../../features/documents/mockData";
-import DocumentViewer from "@features/documents/components/DocumentViewer";
-import { Document } from "@features/documents/types";
-import TopBar from "@components/TopBar";
+import { mockDocuments } from "../../features/documents/mockData.js";
+import DocumentViewer from "@features/documents/components/DocumentViewer.tsx";
+import { Document } from "@features/documents/types.js";
+import TopBar from "@components/TopBar.js";
 
 const DocumentDetailPage = () => {
   const { id } = useParams();

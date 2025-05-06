@@ -1,4 +1,4 @@
-import { Document } from "@features/documents/types";
+import { Document } from "@features/documents/types.ts";
 
 export const mockDocuments: Document[] = [
   {

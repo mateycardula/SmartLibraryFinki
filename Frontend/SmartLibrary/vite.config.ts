@@ -4,6 +4,11 @@ import * as path from "path";
 
 export default defineConfig({
   plugins: [react()],
+  build: {
+    rollupOptions: {
+      external: ['pdfjs-dist/build/pdf.worker.min.js'],
+    },
+  },
   resolve: {
     alias: {
       "@app": path.resolve(__dirname, "src/app"),
@@ -15,4 +20,5 @@ export default defineConfig({
       "@components": path.resolve(__dirname, "src/components"),
     },
   },
+  assetsInclude: ['**/*.worker.js'],
 });

@@ -1,5 +1,5 @@
 import styles from "./signIn.module.css";
-import AuthButtonsComponent from "@features/auth/components/auth-component";
+import AuthButtonsComponent from "@features/auth/components/auth-component.js";
 
 const SignInPage = () => {
   return (

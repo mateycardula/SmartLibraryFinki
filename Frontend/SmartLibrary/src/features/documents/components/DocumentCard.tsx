@@ -1,6 +1,6 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import { Document } from "../types";
+import { Document } from "../types.js";
 
 interface Props {
   document: Document;

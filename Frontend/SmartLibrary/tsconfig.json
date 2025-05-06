@@ -1,11 +1,13 @@
 {
   "compilerOptions": {
     "jsx": "react-jsx",
-    "moduleResolution": "node",
+    "moduleResolution": "node16",
     "esModuleInterop": true,
-    "module": "ESNext",
+    "module": "Node16",
     "target": "ESNext",
     "baseUrl": "src",
+    "noEmit": true,
+    "allowImportingTsExtensions": true,
     "paths": {
       "@app/*": ["app/*"],
       "@pages/*": ["pages/*"],
@@ -14,6 +16,8 @@
       "@styles/*": ["styles/*"],
       "@assets/*": ["assets/*"],
       "@components/*": ["components/*"]
-    }
+    },
+
+    "types": ["node", "react", "react-dom", "react-router-dom"]  // Make sure these types are included
   }
 }

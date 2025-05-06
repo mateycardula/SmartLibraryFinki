@@ -1,5 +1,5 @@
-import PdfViewer from "./PdfViewer";
-import { getFileType } from "@shared/utils/fileUtils";
+import PdfViewer from "./PdfViewer.tsx";
+import { getFileType } from "@shared/utils/fileUtils.ts";
 
 interface Props {
   file: File | string;

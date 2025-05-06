@@ -1,5 +1,5 @@
 import styles from "./signUp.module.css";
-import AuthButtonsComponent from "@features/auth/components/auth-component";
+import AuthButtonsComponent from "@features/auth/components/auth-component.tsx";
 
 const SignUpPage = () => {
   return (

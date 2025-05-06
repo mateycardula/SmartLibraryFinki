@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import { Document } from "../types";
-import DocumentCard from "./DocumentCard";
+import { Document } from "../types.js";
+import DocumentCard from "./DocumentCard.js";
 
 interface Props {
   documents: Document[];
