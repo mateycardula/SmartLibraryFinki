@@ -1,12 +1,23 @@
 {
-  "files": [],
-  "references": [
-    { "path": "./tsconfig.app.json" },
-    { "path": "./tsconfig.node.json" }
-  ],
   "compilerOptions": {
-    "moduleResolution": "node",
+    "jsx": "react-jsx",
+    "moduleResolution": "node16",
     "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true
+    "module": "Node16",
+    "target": "ESNext",
+    "baseUrl": "src",
+    "noEmit": true,
+    "allowImportingTsExtensions": true,
+    "paths": {
+      "@app/*": ["app/*"],
+      "@pages/*": ["pages/*"],
+      "@features/*": ["features/*"],
+      "@shared/*": ["shared/*"],
+      "@styles/*": ["styles/*"],
+      "@assets/*": ["assets/*"],
+      "@components/*": ["components/*"]
+    },
+
+    "types": ["node", "react", "react-dom", "react-router-dom"]  // Make sure these types are included
   }
 }

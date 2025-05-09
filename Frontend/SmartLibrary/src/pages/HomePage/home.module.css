@@ -1,0 +1,28 @@
+.homeContainer {
+  background: linear-gradient(to right, #1e3c72, #2a5298);
+  color: white;
+  padding: 4rem;
+  text-align: center;
+  min-height: 100vh;
+}
+
+.heroSection {
+  margin-bottom: 3rem;
+}
+
+.authButtons button {
+  margin: 0.5rem;
+  padding: 0.7rem 1.5rem;
+  border: none;
+  border-radius: 8px;
+  font-weight: bold;
+  background: white;
+  color: #1e3c72;
+  cursor: pointer;
+}
+
+.features ul {
+  text-align: left;
+  display: inline-block;
+  margin-top: 1rem;
+}
