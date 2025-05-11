@@ -1,6 +1,8 @@
 package mk.ukim.finki.smartlibrary.Controllers;
 
 import mk.ukim.finki.smartlibrary.Models.User;
+import mk.ukim.finki.smartlibrary.DTOs.LoginUserDTO;
+import mk.ukim.finki.smartlibrary.DTOs.RegisterUserDTO;
 import mk.ukim.finki.smartlibrary.Service.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -33,10 +35,15 @@ public class UserController {
         return userService.findByEmail(email);
     }
 
-    @PostMapping
+    @PostMapping("/register")
     @ResponseStatus(HttpStatus.CREATED)
-    public User createUser(@RequestBody User user) {
+    public User createUser(@RequestBody  RegisterUserDTO user) {
         return userService.create(user);
+    }
+
+    @PostMapping("/login")
+    public Optional<User> loginUser(@RequestBody LoginUserDTO loginDTO) {
+        return userService.login(loginDTO);
     }
 
     @PutMapping("/{id}")

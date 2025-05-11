@@ -30,6 +30,15 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<ExportDocument> exportedDocuments;
 
+    public User() {
+    }
+
+    public User(String name, String email, String passwordHash) {
+        this.name = name;
+        this.email = email;
+        this.passwordHash = passwordHash;
+        role = Role.STUDENT; // Default role
+    }
 
     // Getters & Setters
     public Long getId() { return id; }
