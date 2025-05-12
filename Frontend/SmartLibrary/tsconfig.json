@@ -18,6 +18,6 @@
       "@components/*": ["components/*"]
     },
 
-    "types": ["node", "react", "react-dom", "react-router-dom"]  // Make sure these types are included
+    "types": ["node", "react", "react-dom", "react-router-dom"] // Make sure these types are included
   }
 }

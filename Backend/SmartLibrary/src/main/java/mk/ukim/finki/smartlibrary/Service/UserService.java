@@ -1,6 +1,8 @@
 package mk.ukim.finki.smartlibrary.Service;
 
+import org.springframework.security.crypto.bcrypt.BCrypt;
 import mk.ukim.finki.smartlibrary.Models.User;
+import mk.ukim.finki.smartlibrary.DTOs.*;
 import mk.ukim.finki.smartlibrary.Repository.UserRepository;
 import org.springframework.stereotype.Service;
 
@@ -28,8 +30,19 @@ public class UserService {
         return Optional.ofNullable(repo.findByEmail(email));
     }
 
-    public User create(User u) {
-        return repo.save(u);
+    public User create(RegisterUserDTO u) {
+        String plainPassword = u.getPassword();
+        String hashedPassword = BCrypt.hashpw(plainPassword, BCrypt.gensalt());
+        User user = new User(u.getName(), u.getEmail(), hashedPassword);
+        return repo.save(user);
+    }
+
+    public Optional<User> login(LoginUserDTO loginDTO) {
+        User user = repo.findByEmail(loginDTO.getEmail());
+        if (user != null && BCrypt.checkpw(loginDTO.getPassword(), user.getPasswordHash())) {
+            return Optional.of(user);
+        }
+        return Optional.empty();
     }
 
     public Optional<User> update(Long id, User in) {

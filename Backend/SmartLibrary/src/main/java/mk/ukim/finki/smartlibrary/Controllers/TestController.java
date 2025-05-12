@@ -20,10 +20,9 @@ public class TestController {
         return "Hello, this is a test message!";
     }
 
-    @GetMapping
-    @RequestMapping("/python")
+    @GetMapping("/python")
     public String getPythonTestMessage() {
-        String url = "http://flask:5000";
+        String url = "http://flask:5000/";
         return restTemplate.getForObject(url, String.class);
     }
 }
