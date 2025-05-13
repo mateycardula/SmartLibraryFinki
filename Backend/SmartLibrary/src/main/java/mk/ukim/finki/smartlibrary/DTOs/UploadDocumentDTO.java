@@ -13,4 +13,6 @@ public class UploadDocumentDTO {
   private Long categoryId;
   private File file;
   private Long userId;
+  private String description;
+
 }

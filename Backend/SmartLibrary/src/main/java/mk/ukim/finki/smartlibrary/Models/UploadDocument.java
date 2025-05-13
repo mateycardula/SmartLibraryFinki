@@ -36,6 +36,9 @@ public class UploadDocument {
     @ManyToMany(mappedBy = "documents")
     private List<Category> categories;
 
+    private String description;
+
+
     public Long getId() {
         return id;
     }
@@ -97,5 +100,13 @@ public class UploadDocument {
     }
     public void setFile(File file) {
         this.file = file;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 }

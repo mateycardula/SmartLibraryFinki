@@ -42,9 +42,11 @@ public class UploadDocumentService {
         return repo.save(doc);
     }
 
+
     public Optional<UploadDocument> update(Long id, UploadDocument in) {
         return repo.findById(id).map(existing -> {
             existing.setFileName(in.getFileName());
+            existing.setDescription(in.getDescription());
             existing.setFileType(in.getFileType());
             existing.setProcessed(in.isProcessed());
             existing.setUploadedDate(in.getUploadedDate());
@@ -74,6 +76,7 @@ public class UploadDocumentService {
                 
         UploadDocument uploadDocument = new UploadDocument();
         uploadDocument.setFileName(uploadDocumentDTO.getFile().getName());
+        uploadDocument.setDescription(uploadDocumentDTO.getDescription());
         uploadDocument.setProcessed(false);
         uploadDocument.setUploadedDate(new java.util.Date());
         uploadDocument.setUser(user);
