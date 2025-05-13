@@ -34,9 +34,9 @@ const UploadCard = () => {
         }
 
         const formData = new FormData();
-        formData.append("userId", userId);
         formData.append("categoryId", selectedCategory);
         formData.append("file", file);
+        formData.append("userId", userId);
         formData.append("description", description);
 
         try {
