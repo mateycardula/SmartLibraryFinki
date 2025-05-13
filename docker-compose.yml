@@ -17,7 +17,7 @@ services:
     environment:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/smartlibrary
       - SPRING_DATASOURCE_USERNAME=postgres
-      - SPRING_DATASOURCE_PASSWORD=postgres123
+      - SPRING_DATASOURCE_PASSWORD=postgres
 
   flask:
     build: ./Ai/FlaskApp
