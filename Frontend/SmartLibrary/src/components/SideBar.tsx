@@ -9,7 +9,7 @@ const SideBar = () => {
           width: 250px;
           background-color: #1f3c88;
           color: white;
-          height: 100vh;
+          min-height: 100vh;
           padding: 20px;
           box-sizing: border-box;
         }
@@ -44,7 +44,6 @@ const SideBar = () => {
                 <Link to="/upload" className="menu-item">📤 Прикачи документ</Link>
                 <Link to="/dashboard" className="menu-item">📁 Мои документи</Link>
                 <div className="menu-item">🧠 Генерирани тестови</div>
-                <div className="menu-item">⚙️ Поставки</div>
                 <div className="menu-item logout">📕 Одјави се</div>
             </div>
         </>
