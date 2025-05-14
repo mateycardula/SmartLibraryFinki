@@ -138,7 +138,7 @@ const UploadCard = () => {
                         maxLength={200}
                         value={description}
                         onChange={(e) => setDescription(e.target.value)}
-                        placeholder="Напишете краток опис (макс 200 карактери)..."
+                        placeholder="Напишете краток опис..."
                     ></textarea>
 
                     <button type="submit" className="upload-btn">

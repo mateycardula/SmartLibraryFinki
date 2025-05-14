@@ -43,7 +43,7 @@ const SideBar = () => {
                 <Link to="/" className="menu-item">🏠 Контролна табла</Link>
                 <Link to="/upload" className="menu-item">📤 Прикачи документ</Link>
                 <Link to="/dashboard" className="menu-item">📁 Мои документи</Link>
-                <div className="menu-item">🧠 Генерирани тестови</div>
+                <Link to="/generated-tests" className="menu-item">🧠 Генерирани тестови</Link>
                 <div className="menu-item logout">📕 Одјави се</div>
             </div>
         </>
