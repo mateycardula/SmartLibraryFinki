@@ -1,9 +1,10 @@
 import React from 'react';
 import SideBar from '../../components/SideBar.js';
-import GeneratedContentCard from "@components/GeneratedContentCard.js";
+import ControlPanelCard from "@components/ControlPanelCard.js";
 
 
-const GeneratedTestsPage = () => {
+
+const ControlPanelPage = () => {
     return (
         <>
             <style>{`
@@ -31,13 +32,10 @@ const GeneratedTestsPage = () => {
             <div className="layout">
                 <SideBar />
                 <div className="main">
-                    <div className="header">
-                        🧠 Генерирани тестови
-                    </div>
-                    <GeneratedContentCard />
+                    <ControlPanelCard />
                 </div>
             </div>
         </>
     );
 };
-export default GeneratedTestsPage;
+export default ControlPanelPage;

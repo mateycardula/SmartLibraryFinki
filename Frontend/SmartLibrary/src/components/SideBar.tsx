@@ -40,7 +40,7 @@ const SideBar = () => {
       `}</style>
             <div className="sidebar">
                 <h1>📚 Smart Library</h1>
-                <Link to="/" className="menu-item">🏠 Контролна табла</Link>
+                <Link to="/control-panel" className="menu-item">🏠 Контролна табла</Link>
                 <Link to="/upload" className="menu-item">📤 Прикачи документ</Link>
                 <Link to="/dashboard" className="menu-item">📁 Мои документи</Link>
                 <Link to="/generated-tests" className="menu-item">🧠 Генерирани тестови</Link>
