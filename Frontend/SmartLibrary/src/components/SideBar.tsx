@@ -1,8 +1,14 @@
 import React from 'react';
-import {Link} from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
 
 const SideBar = () => {
-    return (
+    const navigate = useNavigate();
+
+    const handleLogout = () => {
+        localStorage.removeItem("user"); // or whatever key you use
+        navigate("/sign-in");
+    };
+        return (
         <>
             <style>{`
         .sidebar {
@@ -44,7 +50,7 @@ const SideBar = () => {
                 <Link to="/upload" className="menu-item">📤 Прикачи документ</Link>
                 <Link to="/dashboard" className="menu-item">📁 Мои документи</Link>
                 <Link to="/generated-tests" className="menu-item">🧠 Генерирани тестови</Link>
-                <div className="menu-item logout">📕 Одјави се</div>
+                <div className="menu-item logout" onClick={handleLogout}>📕 Одјави се</div>
             </div>
         </>
     );
