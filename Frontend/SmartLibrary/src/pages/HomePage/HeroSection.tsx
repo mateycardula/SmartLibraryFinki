@@ -1,6 +1,6 @@
 import React from "react";
 import styles from "./home.module.css";
-import AuthButtonsComponent from "@features/auth/components/auth-component.js";
+import AuthButtonsComponent from "@features/auth/components/auth-component.tsx";
 
 const HeroSection: React.FC = () => {
   return (

@@ -1,6 +1,6 @@
 import React from "react";
 import styles from "./home.module.css";
-import HeroSection from "./HeroSection.js";
+import HeroSection from "./HeroSection.tsx";
 import FeaturesList from "./FeaturesList.tsx";
 
 const HomePage: React.FC = () => {

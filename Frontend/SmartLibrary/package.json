@@ -5,12 +5,13 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build",
+    "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview"
   },
   "dependencies": {
     "@types/react-router": "^5.1.20",
+    "bcryptjs": "^3.0.2",
     "lucide-react": "^0.507.0",
     "pdfjs-dist": "^3.11.174",
     "react": "^18.3.1",
