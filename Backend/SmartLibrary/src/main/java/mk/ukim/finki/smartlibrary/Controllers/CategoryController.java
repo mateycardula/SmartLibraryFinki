@@ -1,6 +1,7 @@
 package mk.ukim.finki.smartlibrary.Controllers;
 
 import jakarta.annotation.PostConstruct; // <-- make sure this import is correct for your environment
+import mk.ukim.finki.smartlibrary.DTOs.CategoryDTO;
 import mk.ukim.finki.smartlibrary.Models.Category;
 import mk.ukim.finki.smartlibrary.Service.CategoryService;
 import org.springframework.http.HttpStatus;
@@ -21,10 +22,14 @@ public class CategoryController {
 
 
     @GetMapping
-    public ResponseEntity<List<Category>> getAllCategories() {
-        List<Category> categories = categoryService.findAll();
-        return ResponseEntity.ok(categories);
+    public ResponseEntity<List<CategoryDTO>> getAllCategories() {
+        List<CategoryDTO> dtos = categoryService.findAll()
+                .stream()
+                .map(cat -> new CategoryDTO(cat.getId(), cat.getName()))
+                .toList();
+        return ResponseEntity.ok(dtos);
     }
+
 
     @GetMapping("/{id}")
     public ResponseEntity<Category> getCategoryById(@PathVariable Long id) {

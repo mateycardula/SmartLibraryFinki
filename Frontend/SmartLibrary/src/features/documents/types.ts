@@ -1,7 +1,8 @@
-export interface Document {
-  id: string;
-  title: string;
-  categories: string[];
-  file: File | string;
-  createdAt: string;
+export interface DocumentSummary {
+  id: number;
+  fileName: string;
+  description: string;
+  fileType: string;
+  uploadedDate: string;
+  categoryNames: string[];
 }

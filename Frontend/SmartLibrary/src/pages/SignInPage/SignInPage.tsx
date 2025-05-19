@@ -1,8 +1,7 @@
 import styles from "./signIn.module.css";
 import AuthButtonsComponent from "@features/auth/components/auth-component.js";
-import bcrypt from "bcryptjs";
-import {useState} from "react";
-import {useNavigate} from "react-router-dom";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const SignInPage = () => {
     const [email, setEmail] = useState("");
@@ -15,24 +14,24 @@ const SignInPage = () => {
         setErrorMessage("");
 
         try {
-            const response = await fetch("http://localhost:8080/api/users");
-            const users = await response.json();
+            const response = await fetch("http://localhost:8080/api/users/login", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ email, password }),
+            });
 
-            const user = users.find((u: any) => u.email === email);
-
-            if (!user) {
-
-                navigate("/sign-up");
+            if (!response.ok) {
+                if (response.status === 401) {
+                    setErrorMessage("Невалидни креденцијали. Обидете се повторно.");
+                } else {
+                    setErrorMessage("Настана грешка. Обидете се повторно.");
+                }
                 return;
             }
 
-            const isMatch = await bcrypt.compare(password, user.passwordHash);
-
-            if (!isMatch) {
-
-                setErrorMessage("Внесовте погрешна лозинка. Обидете се повторно.");
-                return;
-            }
+            const user = await response.json();
             localStorage.setItem("user", JSON.stringify(user));
             navigate("/control-panel");
         } catch (error) {
@@ -46,12 +45,21 @@ const SignInPage = () => {
             <AuthButtonsComponent activeTab="sign-in" />
             <form onSubmit={handleSubmit}>
                 <label>Емаил адреса</label>
-                <input type="email" placeholder="example@edu.com" value={email}
-                       onChange={(e) => setEmail(e.target.value)}/>
+                <input
+                    type="email"
+                    placeholder="example@edu.com"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                />
 
                 <label>Лозинка</label>
-                <input type="password" placeholder="Внесете лозинка"  value={password}
-                       onChange={(e) => setPassword(e.target.value)} />
+                <input
+                    type="password"
+                    placeholder="Внесете лозинка"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                />
+
                 {errorMessage && <p style={{ color: "red" }}>{errorMessage}</p>}
                 <button type="submit">Најави се</button>
             </form>

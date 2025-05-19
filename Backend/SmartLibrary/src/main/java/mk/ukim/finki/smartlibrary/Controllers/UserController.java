@@ -1,10 +1,13 @@
 package mk.ukim.finki.smartlibrary.Controllers;
 
+import mk.ukim.finki.smartlibrary.DTOs.UserLoginDTO;
 import mk.ukim.finki.smartlibrary.Models.User;
 import mk.ukim.finki.smartlibrary.DTOs.LoginUserDTO;
 import mk.ukim.finki.smartlibrary.DTOs.RegisterUserDTO;
 import mk.ukim.finki.smartlibrary.Service.UserService;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,8 +24,10 @@ public class UserController {
     }
 
     @GetMapping
-    public List<User> getAllUsers() {
-        return userService.findAll();
+    public List<UserLoginDTO> getAllUsers() {
+        return userService.findAll().stream()
+                .map(user -> new UserLoginDTO(user.getId(), user.getEmail(), user.getName()))
+                .toList();
     }
 
     @GetMapping("/{id}")
@@ -36,14 +41,22 @@ public class UserController {
     }
 
     @PostMapping("/register")
-    @ResponseStatus(HttpStatus.CREATED)
-    public User createUser(@RequestBody  RegisterUserDTO user) {
-        return userService.create(user);
+    public ResponseEntity<UserLoginDTO> register(@RequestBody RegisterUserDTO userDto) {
+        User user = userService.create(userDto);
+        UserLoginDTO response = new UserLoginDTO(user.getId(), user.getEmail(), user.getName());
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
-    @PostMapping("/login")
-    public Optional<User> loginUser(@RequestBody LoginUserDTO loginDTO) {
-        return userService.login(loginDTO);
+    @PostMapping(value = "/login", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> login(@RequestBody LoginUserDTO loginDTO) {
+        Optional<User> userOpt = userService.login(loginDTO);
+        if (userOpt.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials");
+        }
+
+        User user = userOpt.get();
+        UserLoginDTO dto = new UserLoginDTO(user.getId(), user.getEmail(), user.getName());
+        return ResponseEntity.ok(dto);
     }
 
     @PutMapping("/{id}")

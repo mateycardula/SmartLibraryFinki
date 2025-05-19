@@ -1,6 +1,6 @@
-import { Document } from "@features/documents/types.ts";
+import { DocumentSummary } from "@features/documents/types.ts";
 
-export const mockDocuments: Document[] = [
+export const mockDocuments: DocumentSummary[] = [
   {
     id: "1",
     title: "Пример PDF документ",

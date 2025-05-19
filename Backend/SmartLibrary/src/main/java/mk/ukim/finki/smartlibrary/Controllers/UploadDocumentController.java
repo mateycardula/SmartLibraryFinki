@@ -1,11 +1,20 @@
 package mk.ukim.finki.smartlibrary.Controllers;
 
+import mk.ukim.finki.smartlibrary.DTOs.DocumentSummaryDTO;
 import mk.ukim.finki.smartlibrary.Models.UploadDocument;
 import mk.ukim.finki.smartlibrary.Service.UploadDocumentService;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import mk.ukim.finki.smartlibrary.DTOs.UploadDocumentDTO;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.ResponseStatusException;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Optional;
 
@@ -50,9 +59,45 @@ public class UploadDocumentController {
         return uploadDocumentService.delete(id);
     }
 
-    @PostMapping("/upload")
-    @ResponseStatus(HttpStatus.CREATED)
-    public Long uploadDocument(@RequestBody UploadDocumentDTO uploadDocument) {
-        return uploadDocumentService.upload(uploadDocument);
+    @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<Long> uploadDocument(@ModelAttribute UploadDocumentDTO dto) {
+        Long id = uploadDocumentService.upload(dto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(id);
+    }
+
+    @GetMapping("/user/{userId}/summary")
+    public List<DocumentSummaryDTO> getDocumentSummaries(@PathVariable Long userId) {
+        return uploadDocumentService.getSummariesByUser(userId);
+    }
+
+    @GetMapping("/{id}/file")
+    public ResponseEntity<byte[]> getDocumentFile(@PathVariable Long id) {
+        UploadDocument document = uploadDocumentService.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Document not found"));
+
+        Path path = Paths.get(document.getFilePath());
+
+        if (!Files.exists(path)) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "File not found on disk");
+        }
+
+        try {
+            byte[] fileContent = Files.readAllBytes(path);
+            String fileName = document.getFileName();
+
+            // Detect basic content type from file extension
+            String contentType = Files.probeContentType(path);
+            if (contentType == null) {
+                contentType = "application/octet-stream";
+            }
+
+            return ResponseEntity.ok()
+                    .contentType(MediaType.parseMediaType(contentType))
+                    .header("Content-Disposition", "inline; filename=\"" + fileName + "\"")
+                    .body(fileContent);
+
+        } catch (IOException e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error reading file", e);
+        }
     }
 }

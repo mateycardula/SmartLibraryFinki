@@ -1,9 +1,9 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import { Document } from "../types.js";
+import { DocumentSummary } from "../types.js";
 
 interface Props {
-  document: Document;
+  document: DocumentSummary;
   onCategoryClick?: (category: string) => void;
 }
 
@@ -38,9 +38,9 @@ const DocumentCard: React.FC<Props> = ({ document, onCategoryClick }) => {
       }
     >
       <div>
-        <h3 style={{ margin: "0 0 0.5rem" }}>{document.title}</h3>
+        <h3 style={{ margin: "0 0 0.5rem" }}>{document.fileName}</h3>
         <small style={{ color: "#64748b" }}>
-          {new Date(document.createdAt).toLocaleDateString()}
+          {new Date(document.uploadedDate).toLocaleDateString()}
         </small>
 
         <div
@@ -52,7 +52,7 @@ const DocumentCard: React.FC<Props> = ({ document, onCategoryClick }) => {
           }}
           onClick={(e) => e.stopPropagation()} // prevent nav when clicking tag
         >
-          {document.categories.map((cat) => (
+          {document.categoryNames.map((cat) => (
             <span
               key={cat}
               onClick={() => onCategoryClick?.(cat)}

@@ -1,37 +1,27 @@
 import styles from "./signUp.module.css";
 import AuthButtonsComponent from "@features/auth/components/auth-component.tsx";
-import {useNavigate} from "react-router-dom";
-import {useState} from "react";
+import { useNavigate } from "react-router-dom";
+import { useState } from "react";
 
 const SignUpPage = () => {
     const [name, setName] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [errorMessage, setErrorMessage] = useState("");
     const navigate = useNavigate();
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        setErrorMessage("");
+
+        const newUser = {
+            fullName: name,
+            email,
+            password,
+        };
 
         try {
-
-            const usersResponse = await fetch("http://localhost:8080/api/users");
-            const users = await usersResponse.json();
-
-
-            const userExists = users.some((user: any) => user.email === email);
-            if (userExists) {
-
-                navigate("/sign-in");
-                return;
-            }
-
-            const newUser = {
-                email,
-                password,
-                name
-            };
-
-            const createResponse = await fetch("http://localhost:8080/api/users/register", {
+            const response = await fetch("http://localhost:8080/api/users/register", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -39,31 +29,48 @@ const SignUpPage = () => {
                 body: JSON.stringify(newUser),
             });
 
-            if (createResponse.ok) {
-
+            if (response.ok) {
                 navigate("/sign-in");
+            } else if (response.status === 409) {
+                setErrorMessage("Корисник со оваа емаил адреса веќе постои.");
             } else {
-                console.error("User creation failed.");
+                setErrorMessage("Неуспешна регистрација. Обидете се повторно.");
             }
         } catch (error) {
             console.error("Error:", error);
+            setErrorMessage("Настана грешка при регистрација.");
         }
     };
+
     return (
         <div className={styles.authContainer}>
             <AuthButtonsComponent activeTab="sign-up" />
             <form onSubmit={handleSubmit}>
                 <label>Име и презиме</label>
-                <input type="text" placeholder="Јован Јованов" value={name}
-                       onChange={(e) => setName(e.target.value)} />
+                <input
+                    type="text"
+                    placeholder="Јован Јованов"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                />
 
                 <label>Емаил адреса</label>
-                <input type="email" placeholder="example@edu.com" value={email}
-                       onChange={(e) => setEmail(e.target.value)} />
+                <input
+                    type="email"
+                    placeholder="example@edu.com"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                />
 
                 <label>Лозинка</label>
-                <input type="password" placeholder="Креирај лозинка" value={password}
-                       onChange={(e) => setPassword(e.target.value)}  />
+                <input
+                    type="password"
+                    placeholder="Креирај лозинка"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                />
+
+                {errorMessage && <p style={{ color: "red" }}>{errorMessage}</p>}
 
                 <button type="submit">Регистрирај се</button>
             </form>

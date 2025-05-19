@@ -1,5 +1,6 @@
 package mk.ukim.finki.smartlibrary.Service;
 
+import mk.ukim.finki.smartlibrary.DTOs.DocumentSummaryDTO;
 import mk.ukim.finki.smartlibrary.DTOs.UploadDocumentDTO;
 import mk.ukim.finki.smartlibrary.Enums.FileType;
 import mk.ukim.finki.smartlibrary.Models.Category;
@@ -8,10 +9,18 @@ import mk.ukim.finki.smartlibrary.Models.User;
 import mk.ukim.finki.smartlibrary.Repository.UploadDocumentRepository;
 
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 public class UploadDocumentService {
@@ -63,6 +72,8 @@ public class UploadDocumentService {
     }
 
     public Long upload(UploadDocumentDTO uploadDocumentDTO) {
+        MultipartFile file = uploadDocumentDTO.getFile();
+
         User user = userService.findById(uploadDocumentDTO.getUserId())
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
@@ -72,17 +83,54 @@ public class UploadDocumentService {
         List<Category> categories = new ArrayList<>();
         categories.add(category);
 
-        FileType fileType = FileType.fromFileName(uploadDocumentDTO.getFile().getName());
-                
+        String originalFileName = file.getOriginalFilename();
+        if (originalFileName == null) {
+            throw new RuntimeException("Invalid file");
+        }
+
+        FileType fileType = FileType.fromFileName(originalFileName);
+
+        String uploadDir = "uploads";
+        String storedFileName = UUID.randomUUID() + "_" + originalFileName;
+        Path filePath = Paths.get(uploadDir, storedFileName);
+
+        try {
+            Files.createDirectories(filePath.getParent());
+            Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to store file", e);
+        }
+
         UploadDocument uploadDocument = new UploadDocument();
-        uploadDocument.setFileName(uploadDocumentDTO.getFile().getName());
+        uploadDocument.setFileName(originalFileName);
+        uploadDocument.setFilePath(filePath.toString()); // ✅ string path
         uploadDocument.setDescription(uploadDocumentDTO.getDescription());
         uploadDocument.setProcessed(false);
         uploadDocument.setUploadedDate(new java.util.Date());
         uploadDocument.setUser(user);
         uploadDocument.setCategories(categories);
-        uploadDocument.setFile(uploadDocumentDTO.getFile());
+        category.getDocuments().add(uploadDocument);
         uploadDocument.setFileType(fileType);
+
         return repo.save(uploadDocument).getId();
+    }
+
+    public List<DocumentSummaryDTO> getSummariesByUser(Long userId) {
+        return repo.findByUserId(userId).stream()
+                .map(doc -> {
+                    List<String> categoryNames = doc.getCategories().stream()
+                            .map(Category::getName)
+                            .collect(Collectors.toList());
+
+                    return new DocumentSummaryDTO(
+                            doc.getId(),
+                            doc.getFileName(),
+                            doc.getDescription(),
+                            doc.getFileType().toString(),
+                            doc.getUploadedDate(),
+                            categoryNames
+                    );
+                })
+                .collect(Collectors.toList());
     }
 }

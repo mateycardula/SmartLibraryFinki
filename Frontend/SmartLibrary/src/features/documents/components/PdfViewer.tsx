@@ -37,7 +37,7 @@ const PdfViewer: React.FC<Props> = ({ file }) => {
           setLoading(false);
         }}
       >
-        <Page pageNumber={currentPage} width={600} className={styles.page} />
+        <Page pageNumber={currentPage} width={600} className={styles.page}   renderTextLayer={false}/>
       </Document>
 
       {numPages > 1 && (

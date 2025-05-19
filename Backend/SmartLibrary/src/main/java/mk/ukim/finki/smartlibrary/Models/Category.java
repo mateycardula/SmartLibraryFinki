@@ -14,12 +14,7 @@ public class Category {
     @Column(nullable = false, unique = true)
     private String name;
 
-    @ManyToMany
-    @JoinTable(
-            name = "document_categories",
-            joinColumns = @JoinColumn(name = "category_id"),
-            inverseJoinColumns = @JoinColumn(name = "document_id")
-    )
+    @ManyToMany(mappedBy = "categories")
     private List<UploadDocument> documents;
 
     // Getters & Setters
