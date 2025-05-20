@@ -17,6 +17,15 @@ const DocumentDetailPage: React.FC = () => {
     const [editingTitle, setEditingTitle] = useState(false);
     const [titleDraft, setTitleDraft] = useState("");
     const [categoryInput, setCategoryInput] = useState("");
+    const [allCategories, setAllCategories] = useState<{ id: number; name: string }[]>([]);
+
+    useEffect(() => {
+        fetch("http://localhost:8080/api/categories")
+            .then((res) => res.json())
+            .then((data) => setAllCategories(data))
+            .catch((err) => console.error("Failed to fetch categories", err));
+    }, []);
+
 
     useEffect(() => {
         const fetchSummary = async () => {
@@ -37,6 +46,45 @@ const DocumentDetailPage: React.FC = () => {
 
         if (userId && id) fetchSummary();
     }, [userId, id]);
+
+    useEffect(() => {
+        if (!document) return;
+
+        const categoryIds = allCategories
+            .filter((cat) => document.categoryNames.includes(cat.name))
+            .map((cat) => cat.id);
+
+        const updateDto = {
+            fileName: document.fileName,
+            description: "description",
+            fileType: document.fileType,
+            processed: false,
+            uploadedDate: document.uploadedDate,
+            userId: userId,
+            categoryIds: categoryIds,
+        };
+
+        const sendUpdate = async () => {
+            try {
+                const res = await fetch(`http://localhost:8080/api/upload-documents/${document.id}`, {
+                    method: "PUT",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(updateDto),
+                });
+
+                if (!res.ok) throw new Error("Failed to update document");
+
+                console.log("✅ Document updated successfully");
+            } catch (err) {
+                console.error("❌ Error updating document:", err);
+            }
+        };
+
+        sendUpdate();
+    }, [document, allCategories]);
+
 
     useEffect(() => {
         const fetchFile = async () => {
@@ -69,7 +117,6 @@ const DocumentDetailPage: React.FC = () => {
     };
 
     const handleCategoryAdd = (e: React.KeyboardEvent<HTMLInputElement>) => {
-        if (e.key === "Enter") {
             const trimmed = categoryInput.trim();
             if (trimmed && !document.categoryNames.includes(trimmed)) {
                 setDocument({
@@ -78,7 +125,6 @@ const DocumentDetailPage: React.FC = () => {
                 });
                 setCategoryInput("");
             }
-        }
     };
 
     const handleRemoveCategory = (cat: string) => {
@@ -91,6 +137,41 @@ const DocumentDetailPage: React.FC = () => {
     const handleGenerateQA = () => {
         alert(`🤖 Генерирање Q&A за: ${document.fileName}`);
     };
+
+    const updateDocument = async () => {
+        if (!document) return;
+
+        const categoryIds = allCategories
+            .filter((cat) => document.categoryNames.includes(cat.name))
+            .map((cat) => cat.id);
+
+        const updateDto = {
+            fileName: document.fileName,
+            description: "",
+            fileType: document.fileType,
+            processed: false,
+            uploadedDate: document.uploadedDate,
+            userId: userId,
+            categoryIds: categoryIds,
+        };
+
+        try {
+            const res = await fetch(`http://localhost:8080/api/upload-documents/${document.id}`, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(updateDto),
+            });
+
+            if (!res.ok) throw new Error("Failed to update document");
+
+            console.log("✅ Document updated successfully");
+        } catch (err) {
+            console.error("❌ Error updating document:", err);
+        }
+    };
+
 
     return (
         <div style={{ padding: "2rem", maxWidth: "900px", margin: "0 auto" }}>
@@ -107,22 +188,36 @@ const DocumentDetailPage: React.FC = () => {
                         style={{
                             fontSize: "1.8rem",
                             fontWeight: 600,
+                            width: "100%",
                             border: "none",
                             outline: "none",
                             background: "transparent",
                             borderBottom: "2px solid #cbd5e1",
+                            padding: "0.2rem 0",
                         }}
                     />
+
                 ) : (
                     <>
                         <h1
-                            style={{ margin: 0, cursor: "pointer" }}
                             onClick={() => setEditingTitle(true)}
                             title="Кликни за уредување"
+                            style={{
+                                margin: 0,
+                                cursor: "pointer",
+                                borderBottom: "1px dashed #94a3b8",
+                                display: "inline-block",
+                                transition: "color 0.2s ease",
+                            }}
+                            onMouseEnter={(e) => {
+                                e.currentTarget.style.color = "#2563eb";
+                            }}
+                            onMouseLeave={(e) => {
+                                e.currentTarget.style.color = "";
+                            }}
                         >
                             {document.fileName}
                         </h1>
-                        <span style={{ fontSize: "1.2rem", color: "#94a3b8" }}>✏️</span>
                     </>
                 )}
             </div>
@@ -144,37 +239,58 @@ const DocumentDetailPage: React.FC = () => {
                                 gap: "6px",
                             }}
                         >
-              {cat}
-                            <button
-                                onClick={() => handleRemoveCategory(cat)}
-                                style={{
-                                    background: "transparent",
-                                    border: "none",
-                                    fontWeight: "bold",
-                                    fontSize: "0.85rem",
-                                    cursor: "pointer",
-                                }}
-                                title="Избриши"
-                            >
-                ×
-              </button>
+                       {cat}
+                            {document.categoryNames.length > 1 && (
+                                <button
+                                    onClick={() => handleRemoveCategory(cat)}
+                                    style={{
+                                        background: "transparent",
+                                        border: "none",
+                                        fontWeight: "bold",
+                                        fontSize: "0.85rem",
+                                        cursor: "pointer",
+                                    }}
+                                    title="Избриши"
+                                >
+                                    ×
+                                </button>
+                            )}
             </span>
                     ))}
 
-                    <input
-                        type="text"
-                        placeholder="Додади..."
-                        value={categoryInput}
-                        onChange={(e) => setCategoryInput(e.target.value)}
-                        onKeyDown={handleCategoryAdd}
+                    <select
+                        value=""
+                        onChange={(e) => {
+                            const selected = e.target.value;
+                            if (
+                                selected &&
+                                !document.categoryNames.includes(selected)
+                            ) {
+                                setDocument({
+                                    ...document,
+                                    categoryNames: [...document.categoryNames, selected],
+                                });
+                            }
+                        }}
                         style={{
                             fontSize: "0.85rem",
                             padding: "4px 10px",
                             borderRadius: "9999px",
                             border: "1px solid #cbd5e1",
                             outline: "none",
+                            marginTop: "0.5rem",
                         }}
-                    />
+                    >
+                        <option value="" disabled>Додади категорија</option>
+                        {allCategories
+                            .filter((cat) => !document.categoryNames.includes(cat.name))
+                            .map((cat) => (
+                                <option key={cat.id} value={cat.name}>
+                                    {cat.name}
+                                </option>
+                            ))}
+                    </select>
+
                 </div>
             </div>
 

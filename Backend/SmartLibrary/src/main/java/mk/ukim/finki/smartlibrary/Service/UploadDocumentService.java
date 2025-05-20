@@ -1,6 +1,7 @@
 package mk.ukim.finki.smartlibrary.Service;
 
 import mk.ukim.finki.smartlibrary.DTOs.DocumentSummaryDTO;
+import mk.ukim.finki.smartlibrary.DTOs.UpdateDocumentDTO;
 import mk.ukim.finki.smartlibrary.DTOs.UploadDocumentDTO;
 import mk.ukim.finki.smartlibrary.Enums.FileType;
 import mk.ukim.finki.smartlibrary.Models.Category;
@@ -51,19 +52,32 @@ public class UploadDocumentService {
         return repo.save(doc);
     }
 
+    public Optional<UploadDocument> update(Long id, UpdateDocumentDTO dto) {
+        if (dto.getCategoryIds() == null || dto.getCategoryIds().isEmpty()) {
+            throw new IllegalArgumentException("Document must have at least one category.");
+        }
 
-    public Optional<UploadDocument> update(Long id, UploadDocument in) {
         return repo.findById(id).map(existing -> {
-            existing.setFileName(in.getFileName());
-            existing.setDescription(in.getDescription());
-            existing.setFileType(in.getFileType());
-            existing.setProcessed(in.isProcessed());
-            existing.setUploadedDate(in.getUploadedDate());
-            existing.setUser(in.getUser());
-            existing.setCategories(in.getCategories());
+            existing.setFileName(dto.getFileName());
+            existing.setDescription(dto.getDescription());
+            existing.setFileType(FileType.valueOf(dto.getFileType()));
+            existing.setProcessed(dto.isProcessed());
+            existing.setUploadedDate(dto.getUploadedDate());
+
+            User user = userService.findById(dto.getUserId())
+                    .orElseThrow(() -> new RuntimeException("User not found"));
+            existing.setUser(user);
+
+            List<Category> categories = dto.getCategoryIds().stream()
+                    .map(catId -> categoryService.findById(catId).orElseThrow(() -> new RuntimeException("Category not found: " + catId)))
+                    .collect(Collectors.toList());
+
+            existing.setCategories(new ArrayList<>(categories));
+
             return repo.save(existing);
         });
     }
+
 
     public boolean delete(Long id) {
         if (!repo.existsById(id)) return false;

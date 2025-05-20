@@ -1,6 +1,9 @@
 package mk.ukim.finki.smartlibrary.Controllers;
 
 import mk.ukim.finki.smartlibrary.DTOs.DocumentSummaryDTO;
+import mk.ukim.finki.smartlibrary.DTOs.UpdateDocumentDTO;
+import mk.ukim.finki.smartlibrary.Enums.FileType;
+import mk.ukim.finki.smartlibrary.Models.Category;
 import mk.ukim.finki.smartlibrary.Models.UploadDocument;
 import mk.ukim.finki.smartlibrary.Service.UploadDocumentService;
 import org.springframework.http.HttpStatus;
@@ -15,6 +18,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -50,8 +55,37 @@ public class UploadDocumentController {
     }
 
     @PutMapping("/{id}")
-    public Optional<UploadDocument> updateUploadDocument(@PathVariable Long id, @RequestBody UploadDocument uploadDocument) {
-        return uploadDocumentService.update(id, uploadDocument);
+    public ResponseEntity<DocumentSummaryDTO> updateUploadDocument(
+            @PathVariable Long id,
+            @RequestBody UpdateDocumentDTO uploadDocument
+    ) {
+        Optional<UploadDocument> updatedOpt = uploadDocumentService.update(id, uploadDocument);
+
+        if (updatedOpt.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        UploadDocument updated = updatedOpt.get();
+
+        Long updatedId = updated.getId();
+        String fileName = updated.getFileName();
+        Date uploadedDate = updated.getUploadedDate();
+        FileType fileTypeEnum = updated.getFileType();
+        String fileType = fileTypeEnum != null ? fileTypeEnum.toString() : "UNKNOWN";
+
+        List<Category> categories = updated.getCategories();
+        List<String> categoryNames = new ArrayList<>();
+        for (Category cat : categories) {
+            categoryNames.add(cat.getName());
+        }
+
+        DocumentSummaryDTO dto = new DocumentSummaryDTO();
+        dto.setId(updatedId);
+        dto.setFileName(fileName);
+        dto.setUploadedDate(uploadedDate);
+        dto.setFileType(fileType);
+        dto.setCategoryNames(categoryNames);
+        return ResponseEntity.ok(dto);
     }
 
     @DeleteMapping("/{id}")
@@ -85,7 +119,6 @@ public class UploadDocumentController {
             byte[] fileContent = Files.readAllBytes(path);
             String fileName = document.getFileName();
 
-            // Detect basic content type from file extension
             String contentType = Files.probeContentType(path);
             if (contentType == null) {
                 contentType = "application/octet-stream";
