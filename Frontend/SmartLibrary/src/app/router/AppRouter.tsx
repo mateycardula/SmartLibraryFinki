@@ -8,6 +8,8 @@ import UploadDocumentsPage from "@pages/UploadDocumentsPage/UploadDocumentsPage.
 import GeneratedTestsPage from "@pages/GeneratedTestsPage/GeneratedTestsPage.js";
 import ControlPanelPage from "@pages/ControlPanelPage/ControlPanelPage.js";
 import GeneratedQuestionsPreview from "@pages/GeneratedQuestionsPreviewPage/GeneratedQuestionsPreview.js";
+import ExportDocumentDetailPage from "@pages/ExportDetailsPage/ExportDocumentDetailPage.tsx";
+import Layout from "@pages/Layout.js";
 
 
 const AppRouter = () => {
@@ -16,12 +18,15 @@ const AppRouter = () => {
       <Route path="/" element={<HomePage />} />
       <Route path="/sign-in" element={<SignInPage />} />
       <Route path="/sign-up" element={<SignUpPage />} />
+        <Route element={<Layout />}>
       <Route path="/dashboard" element={<DashboardPage />} />
       <Route path="/documents/:id" element={<DocumentDetailPage />} />
       <Route path="/generated-tests" element={<GeneratedTestsPage />} />
         <Route path="/control-panel" element={<ControlPanelPage/>} />
         <Route path="/upload" element={<UploadDocumentsPage/>}/>
         <Route path="/preview-generated-questions" element={<GeneratedQuestionsPreview/>}/>
+        <Route path="/exported/:id" element={<ExportDocumentDetailPage/>}/>
+       </Route>
     </Routes>
   );
 };

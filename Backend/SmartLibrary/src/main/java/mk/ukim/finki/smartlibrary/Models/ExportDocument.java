@@ -1,48 +1,66 @@
 package mk.ukim.finki.smartlibrary.Models;
-import jakarta.persistence.*;
-import java.util.Date;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import jakarta.persistence.*;
+import mk.ukim.finki.smartlibrary.Enums.FileType;
+
+import java.util.Date;
 import java.util.List;
+
 @Entity
 @Table(name = "exported_documents")
 public class ExportDocument {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String fileName;
-    private String fileType;
 
-    @Lob
-    private byte[] fileContent;
+    @Enumerated(EnumType.STRING)
+    private FileType fileType;
+
+    @Column(nullable = false)
+    private String filePath;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date exportedAt;
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "user_id", nullable = false)
+    @JsonManagedReference
     private User user;
 
-    private Date exportedAt;
     @OneToMany(mappedBy = "exportedDocument", cascade = CascadeType.ALL)
+    @JsonManagedReference
     private List<GeneratedContent> contents;
-
-
 
     // Getters & Setters
     public Long getId() { return id; }
+
     public void setId(Long id) { this.id = id; }
 
     public String getFileName() { return fileName; }
+
     public void setFileName(String fileName) { this.fileName = fileName; }
 
-    public String getFileType() { return fileType; }
-    public void setFileType(String fileType) { this.fileType = fileType; }
+    public FileType getFileType() { return fileType; }
 
-    public byte[] getFileContent() { return fileContent; }
-    public void setFileContent(byte[] fileContent) { this.fileContent = fileContent; }
+    public void setFileType(FileType fileType) { this.fileType = fileType; }
 
-    public User getUser() { return user; }
-    public void setUser(User user) { this.user = user; }
+    public String getFilePath() { return filePath; }
+
+    public void setFilePath(String filePath) { this.filePath = filePath; }
 
     public Date getExportedAt() { return exportedAt; }
+
     public void setExportedAt(Date exportedAt) { this.exportedAt = exportedAt; }
 
+    public User getUser() { return user; }
+
+    public void setUser(User user) { this.user = user; }
+
+    public List<GeneratedContent> getContents() { return contents; }
+
+    public void setContents(List<GeneratedContent> contents) { this.contents = contents; }
 }

@@ -29,7 +29,6 @@ const DashboardPage = () => {
         }
       `}</style>
     <div className="layout">
-        <SideBar />
         <div className="main">
       <h1 style={{ marginBottom: "2rem" }}>📁 Документи</h1>
       <DocumentList/>

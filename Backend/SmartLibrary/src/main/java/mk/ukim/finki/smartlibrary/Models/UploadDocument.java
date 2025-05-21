@@ -1,5 +1,6 @@
 package mk.ukim.finki.smartlibrary.Models;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import mk.ukim.finki.smartlibrary.Enums.FileType;
 
@@ -30,6 +31,7 @@ public class UploadDocument {
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
+    @JsonBackReference
     private User user;
 
     @ManyToMany

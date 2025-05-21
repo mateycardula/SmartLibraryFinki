@@ -1,5 +1,6 @@
 package mk.ukim.finki.smartlibrary.Models;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import mk.ukim.finki.smartlibrary.Enums.Role;
 
@@ -25,10 +26,12 @@ public class User {
     private Role role;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @JsonManagedReference
     private List<UploadDocument> uploadDocuments;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    private List<ExportDocument> exportedDocuments;
+    @JsonManagedReference
+    private List<ExportDocument> exprtedDocuments;
 
     public User() {
     }
@@ -58,4 +61,12 @@ public class User {
 
     public List<UploadDocument> getUploadDocuments() { return uploadDocuments; }
     public void setUploadDocuments(List<UploadDocument> uploadDocuments) { this.uploadDocuments = uploadDocuments; }
+
+    public List<ExportDocument> getExprtedDocuments() {
+        return exprtedDocuments;
+    }
+
+    public void setExprtedDocuments(List<ExportDocument> exprtedDocuments) {
+        this.exprtedDocuments = exprtedDocuments;
+    }
 }

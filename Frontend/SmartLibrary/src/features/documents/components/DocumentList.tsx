@@ -14,7 +14,7 @@ const DocumentList: React.FC = () => {
     const fetchDocuments = async () => {
       try {
         const response = await fetch(
-            `http://localhost:8080/api/upload-documents/user/${userId}/summary`
+            `/api/upload-documents/user/${userId}/summary`
         );
         const data = await response.json();
         console.log("[📄] Documents fetched:", data);
@@ -59,10 +59,12 @@ const DocumentList: React.FC = () => {
   const grouped: Record<string, DocumentSummary[]> = {};
   filteredDocs.forEach((doc) => {
     if (!doc.categoryNames || doc.categoryNames.length === 0) {
-      console.warn(`[⚠️] Document missing categoryNames:`, doc);
+      console.warn(`Document missing categoryNames:`, doc);
     }
 
-    doc.categoryNames.forEach((category) => {
+    const uniqueCategories = [...new Set(doc.categoryNames)];
+
+    uniqueCategories.forEach((category) => {
       if (!grouped[category]) grouped[category] = [];
       grouped[category].push(doc);
     });

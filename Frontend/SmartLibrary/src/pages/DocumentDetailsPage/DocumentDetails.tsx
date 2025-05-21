@@ -23,7 +23,7 @@ const DocumentDetailPage: React.FC = () => {
     const [allCategories, setAllCategories] = useState<{ id: number; name: string }[]>([]);
 
     useEffect(() => {
-        fetch("http://localhost:8080/api/categories")
+        fetch("/api/categories")
             .then((res) => res.json())
             .then((data) => setAllCategories(data))
             .catch((err) => console.error("Failed to fetch categories", err));
@@ -33,7 +33,7 @@ const DocumentDetailPage: React.FC = () => {
     useEffect(() => {
         const fetchSummary = async () => {
             try {
-                const res = await fetch(`http://localhost:8080/api/upload-documents/user/${userId}/summary`);
+                const res = await fetch(`/api/upload-documents/user/${userId}/summary`);
                 const summaries: DocumentSummary[] = await res.json();
                 const match = summaries.find((d) => String(d.id) === id);
                 if (!match) throw new Error("Document not found");
@@ -69,7 +69,7 @@ const DocumentDetailPage: React.FC = () => {
 
         const sendUpdate = async () => {
             try {
-                const res = await fetch(`http://localhost:8080/api/upload-documents/${document.id}`, {
+                const res = await fetch(`/api/upload-documents/${document.id}`, {
                     method: "PUT",
                     headers: {
                         "Content-Type": "application/json",
@@ -93,7 +93,7 @@ const DocumentDetailPage: React.FC = () => {
         const fetchFile = async () => {
             if (!document) return;
             try {
-                const response = await fetch(`http://localhost:8080/api/upload-documents/${document.id}/file`);
+                const response = await fetch(`/api/upload-documents/${document.id}/file`);
                 if (!response.ok) throw new Error("Failed to fetch file");
                 const blob = await response.blob();
                 const url = URL.createObjectURL(blob);
@@ -159,7 +159,7 @@ const DocumentDetailPage: React.FC = () => {
         };
 
         try {
-            const res = await fetch(`http://localhost:8080/api/upload-documents/${document.id}`, {
+            const res = await fetch(`/api/upload-documents/${document.id}`, {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",

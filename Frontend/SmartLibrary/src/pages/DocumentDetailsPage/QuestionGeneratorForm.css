@@ -1,0 +1,93 @@
+.generator-form {
+    background: #f8fafc;
+    padding: 2rem 3rem;
+    border-radius: 16px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+    margin-top: 2rem;
+    width: 100%;
+    max-width: 1000px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.generator-form h2 {
+    font-size: 1.6rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    color: #1e293b;
+    text-align: center;
+}
+
+form {
+    flex-direction: column;
+    gap: 2rem;
+    width: 80%;
+}
+
+.section {
+    width: 100%;
+}
+
+.section label {
+    font-weight: 500;
+    color: #334155;
+    margin-bottom: 0.5rem;
+    display: block;
+}
+
+input[type="number"] {
+    width: 100%;
+    padding: 0.5rem 0.75rem;
+    font-size: 1rem;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    background: #ffffff;
+    box-sizing: border-box;
+}
+
+.dist-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 0.5rem;
+}
+
+.dist-table th,
+.dist-table td {
+    text-align: center;
+    padding: 0.5rem;
+}
+
+.dist-table input {
+    width: 90%;
+}
+
+.range-row {
+    display: flex;
+    gap: 2rem;
+    margin-top: 0.5rem;
+}
+
+.range-row > div {
+    flex: 1;
+}
+
+.summary-box {
+    background: #e2e8f0;
+    padding: 1rem;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    color: #334155;
+}
+
+.submit-button {
+    background: #2563eb;
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    border: none;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    align-self: flex-end;
+    margin-top: 1rem;
+}

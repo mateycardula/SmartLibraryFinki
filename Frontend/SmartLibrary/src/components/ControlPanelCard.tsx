@@ -1,21 +1,40 @@
-
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
 const ControlPanelCard = () => {
+    const [stats, setStats] = useState({ uploadCount: 0, exportCount: 0 });
+
+    const user = JSON.parse(localStorage.getItem("user") || "null");
+    const userId = user?.id;
+
+    useEffect(() => {
+        const fetchStats = async () => {
+            try {
+                const res = await fetch(`/api/users/${userId}/stats`);
+                if (!res.ok) throw new Error("Failed to fetch stats");
+                const data = await res.json();
+                setStats(data);
+            } catch (err) {
+                console.error("Error fetching user stats:", err);
+            }
+        };
+
+        if (userId) fetchStats();
+    }, [userId]);
+
     return (
         <div className="control-panel-container">
-            <h1 className="welcome-title">Добредојде назад, професоре!</h1>
+            <h1 className="welcome-title">Добредојде назад!</h1>
             <div className="card-grid">
                 <Link to="/generated-tests" className="card card-purple">
                     <div className="card-icon">🧠</div>
                     <h2 className="card-title">Генерирани Тестови</h2>
-                    <p className="card-desc">7 тестови подготвени за користење</p>
+                    <p className="card-desc">{stats.exportCount} тестови подготвени за користење</p>
                 </Link>
                 <Link to="/dashboard" className="card card-blue">
                     <div className="card-icon">📄</div>
                     <h2 className="card-title">Вкупно Документи</h2>
-                    <p className="card-desc">12 прикачени материјали</p>
+                    <p className="card-desc">{stats.uploadCount} прикачени материјали</p>
                 </Link>
             </div>
 
@@ -32,7 +51,6 @@ const ControlPanelCard = () => {
             color: #2c3e50;
             margin-bottom: 50px;
             text-align: center;
-          
           }
 
           .card-grid {

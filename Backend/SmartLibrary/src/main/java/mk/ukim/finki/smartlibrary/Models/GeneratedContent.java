@@ -1,5 +1,6 @@
 package mk.ukim.finki.smartlibrary.Models;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import mk.ukim.finki.smartlibrary.Enums.QuestionType;
 
@@ -29,6 +30,7 @@ public class GeneratedContent {
     private UploadDocument document;
     @ManyToOne
     @JoinColumn(name = "export_id")
+    @JsonBackReference
     private ExportDocument exportedDocument;
 
 

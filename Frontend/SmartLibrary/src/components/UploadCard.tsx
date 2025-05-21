@@ -12,7 +12,7 @@ const UploadCard = () => {
     useEffect(() => {
         const fetchCategories = async () => {
             try {
-                const response = await fetch('http://localhost:8080/api/categories');
+                const response = await fetch('/api/categories');
                 if (!response.ok) throw new Error('Failed to fetch categories');
                 const data = await response.json();
                 console.log(data)
@@ -40,7 +40,7 @@ const UploadCard = () => {
         formData.append("description", description);
 
         try {
-            const response = await fetch("http://localhost:8080/api/upload-documents/upload", {
+            const response = await fetch("/api/upload-documents/upload", {
                 method: "POST",
                 body: formData,
             });

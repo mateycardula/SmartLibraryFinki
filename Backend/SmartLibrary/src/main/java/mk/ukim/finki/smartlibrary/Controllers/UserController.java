@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -68,4 +69,20 @@ public class UserController {
     public boolean deleteUser(@PathVariable Long id) {
         return userService.delete(id);
     }
+
+    @GetMapping("/{id}/stats")
+    public ResponseEntity<?> getUserDocumentStats(@PathVariable Long id) {
+        return userService.findById(id)
+                .map(user -> {
+                    long uploadCount = user.getUploadDocuments() != null ? user.getUploadDocuments().size() : 0;
+                    long exportCount = user.getExprtedDocuments() != null ? user.getExprtedDocuments().size() : 0;
+
+                    return ResponseEntity.ok(Map.of(
+                            "uploadCount", uploadCount,
+                            "exportCount", exportCount
+                    ));
+                })
+                .orElse(ResponseEntity.notFound().build());
+    }
+
 }

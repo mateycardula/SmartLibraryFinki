@@ -29,7 +29,6 @@ const GeneratedTestsPage = () => {
         }
       `}</style>
             <div className="layout">
-                <SideBar />
                 <div className="main">
                     <div className="header">
                         🧠 Генерирани тестови

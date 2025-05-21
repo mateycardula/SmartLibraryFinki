@@ -19,7 +19,6 @@ const UploadDocumentsPage = () => {
         }
       `}</style>
             <div className="layout">
-                <SideBar />
                 <div className="main">
                     <Header />
                     <UploadCard />

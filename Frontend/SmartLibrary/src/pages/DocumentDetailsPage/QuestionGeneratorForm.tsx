@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import "./QuestionGeneratorForm.css";
 
 type QuestionType = "MULTIPLE_CHOICE" | "TRUE_FALSE" | "SHORT_ANSWER" | "ESSAY";
 
@@ -32,17 +33,25 @@ const QuestionGeneratorForm: React.FC<Props> = ({ onSubmit, documentId }) => {
     const [pageTo, setPageTo] = useState(5);
 
     const updateDistribution = (type: QuestionType, value: number) => {
+        value = Math.max(0, value); // Prevent negatives
+        const currentTotal = Object.values(distribution).reduce((a, b) => a + b, 0);
+        const delta = value - distribution[type];
         const newDist = { ...distribution, [type]: value };
-        let total = Object.values(newDist).reduce((a, b) => a + b, 0);
 
-        if (total > totalQuestions) {
-            let overflow = total - totalQuestions;
-            const keys = (Object.keys(newDist) as QuestionType[]).filter((t) => t !== type);
-            for (const k of keys) {
-                if (overflow <= 0) break;
-                const reduceBy = Math.min(newDist[k], overflow);
-                newDist[k] -= reduceBy;
-                overflow -= reduceBy;
+        let remaining = totalQuestions - Object.values(newDist).reduce((a, b) => a + b, 0);
+
+        const otherTypes = (Object.keys(newDist) as QuestionType[]).filter(t => t !== type);
+
+        while (remaining !== 0 && otherTypes.length > 0) {
+            for (const t of otherTypes) {
+                if (remaining === 0) break;
+
+                const adjust = remaining > 0 ? 1 : -1;
+
+                if (remaining > 0 || newDist[t] > 0) {
+                    newDist[t] += adjust;
+                    remaining -= adjust;
+                }
             }
         }
 
@@ -61,117 +70,92 @@ const QuestionGeneratorForm: React.FC<Props> = ({ onSubmit, documentId }) => {
     };
 
     return (
-        <div
-            style={{
-                marginTop: "2rem",
-                padding: "2rem 2.5rem",
-                borderRadius: "16px",
-                background: "#f8fafc",
-                boxShadow: "0 4px 12px rgba(0,0,0,0.06)",
-                width: "100%",
-            }}
-        >
-            <h2 style={{ fontSize: "1.6rem", fontWeight: 600, marginBottom: "1.5rem" }}>
-                Генерирај прашања и одговори
-            </h2>
+        <div className="generator-form">
+            <h2>Генерирај прашања и одговори</h2>
+            <form onSubmit={handleSubmit}>
+                <div className="section">
+                    <label>Вкупно прашања</label>
+                    <input
+                        type="number"
+                        min={1}
+                        value={totalQuestions}
+                        onChange={(e) => {
+                            const newTotal = Number(e.target.value);
+                            setTotalQuestions(newTotal);
+                            const totalCurrent = Object.values(distribution).reduce((a, b) => a + b, 0);
+                            if (totalCurrent > newTotal) {
+                                const ratio = newTotal / totalCurrent;
+                                const scaled = Object.fromEntries(
+                                    Object.entries(distribution).map(([k, v]) => [k, Math.floor(v * ratio)])
+                                ) as Record<QuestionType, number>;
+                                setDistribution(scaled);
+                            }
+                        }}
+                    />
+                </div>
 
-            <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "2rem" }}>
-                <div style={{ display: "flex", flexWrap: "wrap", gap: "1.5rem" }}>
-                    <div style={{ flex: "1 1 200px", minWidth: "200px" }}>
-                        <label className="block font-medium text-gray-700">Вкупно прашања</label>
-                        <input
-                            type="number"
-                            min={1}
-                            value={totalQuestions}
-                            onChange={(e) => {
-                                const newTotal = Number(e.target.value);
-                                setTotalQuestions(newTotal);
-                                const totalCurrent = Object.values(distribution).reduce((a, b) => a + b, 0);
-                                if (totalCurrent > newTotal) {
-                                    const ratio = newTotal / totalCurrent;
-                                    const scaled = Object.fromEntries(
-                                        Object.entries(distribution).map(([k, v]) => [k, Math.floor(v * ratio)])
-                                    ) as Record<QuestionType, number>;
-                                    setDistribution(scaled);
-                                }
-                            }}
-                            className="w-full px-3 py-2 border rounded-md"
-                        />
-                    </div>
+                <div className="section">
+                    <label>Дистрибуција по тип:</label>
+                    <table className="dist-table">
+                        <thead>
+                        <tr>
+                            {Object.values(QUESTION_TYPE_LABELS).map((label) => (
+                                <th key={label}>{label}</th>
+                            ))}
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            {(Object.keys(QUESTION_TYPE_LABELS) as QuestionType[]).map((type) => (
+                                <td key={type}>
+                                    <input
+                                        type="number"
+                                        min={0}
+                                        value={distribution[type]}
+                                        onChange={(e) => updateDistribution(type, Number(e.target.value))}
+                                    />
+                                </td>
+                            ))}
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
 
-                    {Object.entries(QUESTION_TYPE_LABELS).map(([key, label]) => (
-                        <div key={key} style={{ flex: "1 1 200px", minWidth: "200px" }}>
-                            <label className="block font-medium text-gray-700">{label}</label>
+                <div className="section">
+                    <label>Опсег на страници:</label>
+                    <div className="range-row">
+                        <div>
+                            <label>Од:</label>
                             <input
                                 type="number"
-                                min={0}
-                                value={distribution[key as QuestionType]}
-                                onChange={(e) => updateDistribution(key as QuestionType, Number(e.target.value))}
-                                className="w-full px-3 py-2 border rounded-md"
+                                min={1}
+                                value={pageFrom}
+                                onChange={(e) => setPageFrom(Number(e.target.value))}
                             />
                         </div>
-                    ))}
-                </div>
-
-                <div style={{ display: "flex", flexWrap: "wrap", gap: "1.5rem" }}>
-                    <div style={{ flex: "1 1 200px", minWidth: "200px" }}>
-                        <label className="block font-medium text-gray-700">Од страница</label>
-                        <input
-                            type="number"
-                            min={1}
-                            value={pageFrom}
-                            onChange={(e) => setPageFrom(Number(e.target.value))}
-                            className="w-full px-3 py-2 border rounded-md"
-                        />
-                    </div>
-
-                    <div style={{ flex: "1 1 200px", minWidth: "200px" }}>
-                        <label className="block font-medium text-gray-700">До страница</label>
-                        <input
-                            type="number"
-                            min={pageFrom}
-                            value={pageTo}
-                            onChange={(e) => setPageTo(Number(e.target.value))}
-                            className="w-full px-3 py-2 border rounded-md"
-                        />
+                        <div>
+                            <label>До:</label>
+                            <input
+                                type="number"
+                                min={pageFrom}
+                                value={pageTo}
+                                onChange={(e) => setPageTo(Number(e.target.value))}
+                            />
+                        </div>
                     </div>
                 </div>
 
-                <div
-                    style={{
-                        background: "#e2e8f0",
-                        padding: "0.75rem 1rem",
-                        borderRadius: "8px",
-                        fontSize: "0.95rem",
-                        color: "#334155",
-                    }}
-                >
+                <div className="summary-box">
                     <strong>Дистрибуција:</strong>{" "}
                     {Object.entries(distribution).map(([key, value]) => (
                         <span key={key} style={{ marginRight: "1.25rem" }}>
-              {value} {QUESTION_TYPE_LABELS[key as QuestionType].toLowerCase()}
-            </span>
+                            {value} {QUESTION_TYPE_LABELS[key as QuestionType].toLowerCase()}
+                        </span>
                     ))}{" "}
                     (стр. {pageFrom} до {pageTo})
                 </div>
 
-                <div style={{ textAlign: "right" }}>
-                    <button
-                        type="submit"
-                        style={{
-                            background: "#2563eb",
-                            color: "#fff",
-                            padding: "0.6rem 1.4rem",
-                            borderRadius: "8px",
-                            border: "none",
-                            fontWeight: "bold",
-                            cursor: "pointer",
-                            fontSize: "1rem",
-                        }}
-                    >
-                        Генерирај
-                    </button>
-                </div>
+                <button type="submit" className="submit-button">Генерирај</button>
             </form>
         </div>
     );

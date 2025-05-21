@@ -16,13 +16,70 @@ const GeneratedQuestionsPreview: React.FC = () => {
 
     const [questions, setQuestions] = useState<Question[] | null>(null);
     const [loading, setLoading] = useState(true);
+    const [saving, setSaving] = useState(false);
+
+
+    const user = JSON.parse(localStorage.getItem("user") || "null");
+
+    const handleSaveQuestions = async () => {
+        if (!questions || !user) return;
+        setSaving(true);
+
+        const payload = {
+            userId: user.id,
+            questions: questions.map((q) => ({
+                question: q.question,
+                answer: q.answer,
+                type: q.type,
+            })),
+        };
+
+        try {
+            const res = await fetch("/api/exports", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(payload),
+            });
+
+            if (!res.ok) throw new Error("Export failed");
+            const data = await res.json();
+
+            navigate(`/exported/${data.exportId}`);
+        } catch (err) {
+            console.error("❌ Export failed:", err);
+            alert("Неуспешно зачувување на прашањата.");
+        } finally {
+            setSaving(false);
+        }
+    };
 
     useEffect(() => {
         const generateQuestions = async () => {
             setLoading(true);
 
             try {
-                const res = await fetch("http://localhost:8080/api/ollama/generate-questions", {
+
+                // const mockQuestions: Question[] = [
+                //     {
+                //         question: "What is the definition of inclusive education?\n\nA) Education that separates students based on abilities\nB) Education that is accessible to all students without discrimination\nC) Education only for students with special needs\nD) Education in isolated settings",
+                //         answer: "B) Education that is accessible to all students without discrimination",
+                //         type: "MULTIPLE_CHOICE",
+                //     },
+                //     {
+                //         question: "True or False:\n\nInclusive education promotes the full participation and learning of all students, including those with disabilities, in mainstream classrooms.",
+                //         answer: "TRUE",
+                //         type: "TRUE_FALSE",
+                //     },
+                //     {
+                //         question: "Briefly describe how inclusive education benefits society as a whole.\n\nUse 2–3 sentences to summarize key community impacts.",
+                //         answer: "Inclusive education fosters understanding, empathy, and collaboration among diverse learners. It helps build more accepting and equitable communities that value every individual.",
+                //         type: "ESSAY",
+                //     }
+                // ];
+
+                const res = await fetch("/api/ollama/generate-questions", {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
@@ -31,8 +88,8 @@ const GeneratedQuestionsPreview: React.FC = () => {
                 });
 
                 if (!res.ok) throw new Error("Failed to call generation endpoint");
-
                 const questions: Question[] = await res.json();
+
                 setQuestions(questions);
             } catch (err) {
                 console.error("❌ Error while calling backend:", err);
@@ -76,12 +133,11 @@ const GeneratedQuestionsPreview: React.FC = () => {
                         <div key={idx} className="question-card full-width">
                             <div className="question-type">Тип: {q.type}</div>
 
-                            <input
-                                type="text"
+                            <textarea
                                 value={q.question}
                                 onChange={(e) => handleEdit(idx, "question", e.target.value)}
                                 placeholder="Прашање..."
-                                className="question-input"
+                                className="question-textarea"
                             />
 
                             <div className="answer-label">Одговор:</div>
@@ -108,8 +164,12 @@ const GeneratedQuestionsPreview: React.FC = () => {
                 <button onClick={() => navigate(-1)} className="back-button">
                     ⬅ Назад
                 </button>
-                <button onClick={() => alert("Saving to backend not implemented yet")} className="save-button">
-                    💾 Зачувај прашања
+                <button
+                    onClick={handleSaveQuestions}
+                    className="save-button"
+                    disabled={saving}
+                >
+                    {saving ? "⏳ Се зачувува..." : "💾 Зачувај прашања"}
                 </button>
             </div>
         </div>

@@ -6,18 +6,19 @@ services:
       - "3000:80"
     depends_on:
       - springboot
+    restart: unless-stopped
 
   springboot:
     build: ./Backend/SmartLibrary
     ports:
       - "8080:8080"
     depends_on:
-      - flask
       - postgres
     environment:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/smartlibrary
       - SPRING_DATASOURCE_USERNAME=postgres
       - SPRING_DATASOURCE_PASSWORD=postgres
+    restart: unless-stopped
 
   flask:
     build: ./Ai/FlaskApp

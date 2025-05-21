@@ -30,7 +30,6 @@ const ControlPanelPage = () => {
         }
       `}</style>
             <div className="layout">
-                <SideBar />
                 <div className="main">
                     <ControlPanelCard />
                 </div>

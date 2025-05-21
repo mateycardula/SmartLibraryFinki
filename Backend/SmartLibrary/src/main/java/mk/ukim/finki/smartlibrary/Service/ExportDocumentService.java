@@ -32,7 +32,7 @@ public class ExportDocumentService {
         return repo.findById(id).map(existing -> {
             existing.setFileName(in.getFileName());
             existing.setFileType(in.getFileType());
-            existing.setFileContent(in.getFileContent());
+//            existing.setFileContent(in.getFileContent());
             existing.setExportedAt(in.getExportedAt());
             existing.setUser(in.getUser());
             return repo.save(existing);
