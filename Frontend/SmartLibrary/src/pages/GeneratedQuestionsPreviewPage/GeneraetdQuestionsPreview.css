@@ -1,0 +1,116 @@
+/* src/pages/GeneratedQuestionsPreview.css */
+
+.preview-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+.preview-container h1 {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #1e293b;
+    margin-bottom: 2rem;
+}
+
+.cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 1.5rem;
+}
+
+.question-card {
+    background: #ffffff;
+    border-radius: 16px;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.05);
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    border: 1px solid #e2e8f0;
+}
+
+.question-type {
+    font-size: 0.75rem;
+    color: #64748b;
+    margin-bottom: 0.5rem;
+}
+
+.question-input {
+    font-size: 1.125rem;
+    font-weight: 600;
+    border: none;
+    border-bottom: 2px solid #cbd5e1;
+    padding: 0.25rem;
+    margin-bottom: 1rem;
+    background: #f1f5f9;
+    border-radius: 6px;
+}
+
+.answer-label {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #475569;
+    margin-bottom: 0.25rem;
+}
+
+.answer-textarea {
+    resize: vertical;
+    padding: 0.75rem;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    font-size: 0.875rem;
+    background: #f8fafc;
+}
+
+.delete-button {
+    align-self: flex-end;
+    margin-top: 1rem;
+    color: #ef4444;
+    font-size: 0.85rem;
+    border: none;
+    background: none;
+    cursor: pointer;
+}
+
+.actions {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 2rem;
+    gap: 1rem;
+}
+
+.back-button,
+.save-button {
+    font-weight: 600;
+    padding: 0.6rem 1.2rem;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+}
+
+.back-button {
+    background: #f1f5f9;
+    color: #334155;
+    border: 1px solid #cbd5e1;
+}
+
+.save-button {
+    background: #2563eb;
+    color: white;
+}
+
+.loader-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 3rem;
+    color: #334155;
+    animation: pulse 1.5s infinite ease-in-out;
+    text-align: center;
+}
+
+@keyframes pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.5; }
+    100% { opacity: 1; }
+}

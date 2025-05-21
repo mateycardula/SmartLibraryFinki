@@ -3,12 +3,15 @@ import { useParams } from "react-router-dom";
 import DocumentViewer from "@features/documents/components/DocumentViewer.tsx";
 import { DocumentSummary } from "@features/documents/types.ts";
 import TopBar from "@components/TopBar.tsx";
+import QuestionGeneratorForm from "@pages/DocumentDetailsPage/QuestionGeneratorForm.js";
+import { useNavigate } from "react-router-dom";
 
 const DocumentDetailPage: React.FC = () => {
     const { id } = useParams<{ id: string }>();
     const user = JSON.parse(localStorage.getItem("user") || "null");
     const userId = user?.id;
 
+    const navigate = useNavigate();
     const [document, setDocument] = useState<DocumentSummary | null>(null);
     const [fileUrl, setFileUrl] = useState<string | null>(null);
     const [loading, setLoading] = useState(true);
@@ -294,28 +297,18 @@ const DocumentDetailPage: React.FC = () => {
                 </div>
             </div>
 
-            <div style={{ margin: "1.5rem 0" }}>
-                <button
-                    onClick={handleGenerateQA}
-                    style={{
-                        background: "#2563eb",
-                        color: "white",
-                        padding: "0.5rem 1rem",
-                        borderRadius: "8px",
-                        border: "none",
-                        fontWeight: "bold",
-                        cursor: "pointer",
-                    }}
-                >
-                    🤖 Генерирај Прашања и Одговори
-                </button>
-            </div>
-
             {fileUrl ? (
                 <DocumentViewer file={fileUrl} fileType={document.fileType} />
             ) : (
                 <p>📂 Не може да се прикаже документот.</p>
             )}
+
+            <QuestionGeneratorForm
+                documentId={document.id}
+                onSubmit={(data) => {
+                    navigate("/preview-generated-questions", { state: data });
+                }}
+            />
         </div>
     );
 };

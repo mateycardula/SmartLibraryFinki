@@ -7,6 +7,7 @@ import DocumentDetailPage from "@pages/DocumentDetailsPage/DocumentDetails.js";
 import UploadDocumentsPage from "@pages/UploadDocumentsPage/UploadDocumentsPage.js";
 import GeneratedTestsPage from "@pages/GeneratedTestsPage/GeneratedTestsPage.js";
 import ControlPanelPage from "@pages/ControlPanelPage/ControlPanelPage.js";
+import GeneratedQuestionsPreview from "@pages/GeneratedQuestionsPreviewPage/GeneratedQuestionsPreview.js";
 
 
 const AppRouter = () => {
@@ -20,6 +21,7 @@ const AppRouter = () => {
       <Route path="/generated-tests" element={<GeneratedTestsPage />} />
         <Route path="/control-panel" element={<ControlPanelPage/>} />
         <Route path="/upload" element={<UploadDocumentsPage/>}/>
+        <Route path="/preview-generated-questions" element={<GeneratedQuestionsPreview/>}/>
     </Routes>
   );
 };

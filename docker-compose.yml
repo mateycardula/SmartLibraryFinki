@@ -24,6 +24,14 @@ services:
     ports:
       - "5000:5000"
 
+  ollama:
+    image: ollama/ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama-data:/root/.ollama
+    entrypoint: ["/bin/sh", "-c", "ollama serve & sleep 3 && ollama pull llama3 && tail -f /dev/null"]
+
   postgres:
     image: postgres:14
     ports:
@@ -35,6 +43,6 @@ services:
     volumes:
       - postgres-data:/var/lib/postgresql/data
 
-
 volumes:
   postgres-data:
+  ollama-data:
