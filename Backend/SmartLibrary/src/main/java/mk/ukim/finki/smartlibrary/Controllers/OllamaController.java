@@ -5,6 +5,7 @@ import mk.ukim.finki.smartlibrary.Models.UploadDocument;
 import mk.ukim.finki.smartlibrary.Service.UploadDocumentService;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
@@ -22,6 +23,9 @@ public class OllamaController {
 
     private final RestTemplate restTemplate = new RestTemplate();
     private final UploadDocumentService uploadDocumentService;
+
+    @Value("${GEMINI_API_KEY}")
+    private String geminiApiKey;
 
     public OllamaController(UploadDocumentService uploadDocumentService) {
         this.uploadDocumentService = uploadDocumentService;
@@ -75,40 +79,54 @@ public class OllamaController {
 
             List<PromptBatch> batches = buildPromptBatches(chunks, dto.getTotalQuestions(), stringKeyedDistribution);
 
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+
             for (PromptBatch batch : batches) {
                 String prompt = buildPrompt(batch.getChunk(), stringKeyedDistribution);
 
-                Map<String, Object> body = new HashMap<>();
-                body.put("model", "llama3");
-                body.put("prompt", prompt);
-                body.put("stream", false);
+                String url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key="+geminiApiKey;
 
-                HttpHeaders headers = new HttpHeaders();
-                headers.setContentType(MediaType.APPLICATION_JSON);
+                Map<String, Object> textPart = Map.of("text", prompt);
+                Map<String, Object> content = Map.of("parts", List.of(textPart));
+                Map<String, Object> body = Map.of("contents", List.of(content));
+
                 HttpEntity<Map<String, Object>> request = new HttpEntity<>(body, headers);
 
                 try {
-                    ResponseEntity<Map> response = restTemplate.postForEntity("http://ollama:11434/api/generate", request, Map.class);
-                    String raw = response.getBody().get("response").toString();
+                    ResponseEntity<Map> response = restTemplate.postForEntity(url, request, Map.class);
+
+                    List<Map<String, Object>> candidates = (List<Map<String, Object>>) response.getBody().get("candidates");
+                    if (candidates == null || candidates.isEmpty()) {
+                        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Gemini returned no candidates.");
+                    }
+
+                    Map<String, Object> contentMap = (Map<String, Object>) candidates.get(0).get("content");
+                    List<Map<String, Object>> parts = (List<Map<String, Object>>) contentMap.get("parts");
+                    String raw = parts.get(0).get("text").toString();
+
+                    // Extract JSON array from the text
                     int start = raw.indexOf("[");
                     int end = raw.lastIndexOf("]") + 1;
-
                     if (start >= 0 && end > start) {
                         String json = raw.substring(start, end);
                         return ResponseEntity.ok(json);
                     } else {
-                        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Ollama returned invalid JSON.");
+                        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Gemini returned invalid JSON format.");
                     }
+
                 } catch (Exception e) {
-                    System.err.println("Failed to call Ollama: " + e.getMessage());
+                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                            .body("Error contacting Gemini: " + e.getMessage());
                 }
             }
 
-            return ResponseEntity.ok("Questions requested from Ollama.");
+            return ResponseEntity.ok("Questions requested from Gemini.");
         } catch (IOException e) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to read PDF", e);
         }
     }
+
 
 
     private String sendPromptToOllama(String prompt) {
