@@ -30,7 +30,7 @@ const DashboardPage = () => {
       `}</style>
     <div className="layout">
         <div className="main">
-      <h1 style={{ marginBottom: "2rem" }}>📁 Документи</h1>
+      <h1 style={{ marginBottom: "2rem" }}>Документи</h1>
       <DocumentList/>
         </div>
     </div>
